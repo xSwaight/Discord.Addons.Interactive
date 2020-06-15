@@ -13,14 +13,18 @@ namespace Discord.Addons.Interactive
         public Embed Embed { get; }
         public TimeSpan? Timeout { get; }
         public IEnumerable<ReactionCallbackItem> Callbacks => _items;
-        public bool RemoveReaction { get; set; }
+        public bool RemoveReaction { get; }
+        public bool DeleteMessage { get; }
+        public bool AllowMultipleTimes { get; }
 
-        public ReactionCallbackData(string text, Embed embed = null, bool removeReaction = false, TimeSpan? timeout = null)
+        public ReactionCallbackData(string text, Embed embed = null, bool allowMultipleTimes = false, bool removeReaction = false, bool deleteMessage = false, TimeSpan? timeout = null)
         {
             Text = text;
             Embed = embed;
             Timeout = timeout;
             RemoveReaction = removeReaction;
+            DeleteMessage = deleteMessage;
+            AllowMultipleTimes = allowMultipleTimes;
             _items = new List<ReactionCallbackItem>();
         }
 

@@ -65,7 +65,16 @@ namespace Discord.Addons.Interactive
                     await reaction.Message.Value.RemoveReactionAsync(reaction.Emote, reaction.User.Value);
             }
 
+            if(_data.DeleteMessage)
+            {
+                if (reaction.Message.IsSpecified)
+                    await reaction.Message.Value.DeleteAsync();
+            }
+
             await reactionCallbackItem.Callback(Context);
+            if (_data.AllowMultipleTimes)
+                return false;
+
             return true;
         }
     }
