@@ -136,6 +136,16 @@ namespace Discord.Addons.Interactive
             }
         }
 
+        public async Task<IUserMessage> SendMessageWithReactionCallbacksAsync(SocketCommandContext context, ReactionCallbackData callbacks, bool fromSourceUser = true)
+        {
+            var criterion = new Criteria<SocketReaction>();
+            if (fromSourceUser)
+                criterion.AddCriterion(new EnsureReactionFromSourceUserCriterion());
+            var callback = new InlineReactionCallback(this, context, callbacks, criterion);
+            await callback.DisplayAsync().ConfigureAwait(false);
+            return callback.Message;
+        }
+
         public void Dispose()
         {
             Discord.ReactionAdded -= HandleReactionAsync;
