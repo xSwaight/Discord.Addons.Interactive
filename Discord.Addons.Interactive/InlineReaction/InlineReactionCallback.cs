@@ -31,7 +31,7 @@ namespace Discord.Addons.Interactive
             Context = context;
             _data = data;
             Criterion = criterion ?? new EmptyCriterion<SocketReaction>();
-            Timeout = data.Timeout ?? TimeSpan.FromSeconds(30);
+            Timeout = data.Timeout;
         }
 
         public async Task DisplayAsync()
