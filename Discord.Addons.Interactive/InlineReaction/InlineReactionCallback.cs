@@ -59,6 +59,12 @@ namespace Discord.Addons.Interactive
             if (reactionCallbackItem == null)
                 return false;
 
+            if (_data.RemoveReaction)
+            {
+                if (reaction.Message.IsSpecified && reaction.User.IsSpecified)
+                    await reaction.Message.Value.RemoveReactionAsync(reaction.Emote, reaction.User.Value);
+            }
+
             await reactionCallbackItem.Callback(Context);
             return true;
         }
