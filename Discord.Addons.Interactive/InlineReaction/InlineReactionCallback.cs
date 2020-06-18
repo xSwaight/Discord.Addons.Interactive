@@ -1,6 +1,7 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
 using System;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -8,7 +9,7 @@ namespace Discord.Addons.Interactive
 {
     public class InlineReactionCallback : IReactionCallback
     {
-        public RunMode RunMode => RunMode.Sync;
+        public RunMode RunMode => RunMode.Async;
 
         public ICriterion<SocketReaction> Criterion { get; }
 
@@ -20,6 +21,7 @@ namespace Discord.Addons.Interactive
 
         private readonly InteractiveService _interactive;
         private readonly ReactionCallbackData _data;
+        readonly ConcurrentDictionary<ulong, DateTime> _cooldowns = new ConcurrentDictionary<ulong, DateTime>();
 
         public InlineReactionCallback(
             InteractiveService interactive,
@@ -65,11 +67,30 @@ namespace Discord.Addons.Interactive
                     await reaction.Message.Value.RemoveReactionAsync(reaction.Emote, reaction.User.Value);
             }
 
-            if(_data.DeleteMessage)
+            if (_data.DeleteMessage)
             {
                 if (reaction.Message.IsSpecified)
                     await reaction.Message.Value.DeleteAsync();
             }
+
+            if (_data.Cooldown.HasValue)
+                if (_cooldowns.TryGetValue(Message.Id, out DateTime endsAt))
+                {
+                    var difference = endsAt.Subtract(DateTime.UtcNow);
+                    if (difference.Ticks > 0)
+                    {
+                        if (_data.AllowMultipleTimes)
+                            return false;
+                        else
+                            return true;
+                    }
+                    var time = DateTime.UtcNow.Add(_data.Cooldown.Value);
+                    _cooldowns.TryUpdate(Message.Id, time, endsAt);
+                }
+                else
+                {
+                    _cooldowns.TryAdd(Message.Id, DateTime.UtcNow.Add(_data.Cooldown.Value));
+                }
 
             await reactionCallbackItem.Callback(Context);
             if (_data.AllowMultipleTimes)

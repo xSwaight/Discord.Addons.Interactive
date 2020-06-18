@@ -12,12 +12,13 @@ namespace Discord.Addons.Interactive
         public string Text { get; }
         public Embed Embed { get; }
         public TimeSpan? Timeout { get; }
+        public TimeSpan? Cooldown { get; }
         public IEnumerable<ReactionCallbackItem> Callbacks => _items;
         public bool RemoveReaction { get; }
         public bool DeleteMessage { get; }
         public bool AllowMultipleTimes { get; }
 
-        public ReactionCallbackData(string text, Embed embed = null, bool allowMultipleTimes = false, bool removeReaction = false, bool deleteMessage = false, TimeSpan? timeout = null)
+        public ReactionCallbackData(string text, Embed embed = null, bool allowMultipleTimes = false, bool removeReaction = false, bool deleteMessage = false, TimeSpan? cooldown = null, TimeSpan ? timeout = null)
         {
             Text = text;
             Embed = embed;
@@ -25,6 +26,7 @@ namespace Discord.Addons.Interactive
             RemoveReaction = removeReaction;
             DeleteMessage = deleteMessage;
             AllowMultipleTimes = allowMultipleTimes;
+            Cooldown = cooldown;
             _items = new List<ReactionCallbackItem>();
         }
 
