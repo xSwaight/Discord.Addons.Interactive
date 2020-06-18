@@ -79,10 +79,7 @@ namespace Discord.Addons.Interactive
                     var difference = endsAt.Subtract(DateTime.UtcNow);
                     if (difference.Ticks > 0)
                     {
-                        if (_data.AllowMultipleTimes)
-                            return false;
-                        else
-                            return true;
+                        return !_data.AllowMultipleTimes;
                     }
                     var time = DateTime.UtcNow.Add(_data.Cooldown.Value);
                     _cooldowns.TryUpdate(Message.Id, time, endsAt);
@@ -93,10 +90,8 @@ namespace Discord.Addons.Interactive
                 }
 
             await reactionCallbackItem.Callback(Context);
-            if (_data.AllowMultipleTimes)
-                return false;
 
-            return true;
+            return !_data.AllowMultipleTimes;
         }
     }
 }
